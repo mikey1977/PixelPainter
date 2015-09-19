@@ -12,7 +12,9 @@ function PixelPainter(width, height) {
   var defColors = ['white', 'silver', 'gray', 'black', 'red', 'maroon', 'yellow', 'olive', 'lime', 'green', 'aqua', 'teal', 'blue', 'navy', 'fuschsia', 'purple'];
 //MAKE SWATCH BUTTONS
   erase.className = 'button';
+  erase.setAttribute('value', 'erase');
   clear.className = 'button';
+  clear.setAttribute('value', 'clear');
   erase.addEventListener('click', function() {
     selColor = 'white';
   })
