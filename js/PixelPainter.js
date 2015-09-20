@@ -10,7 +10,10 @@ function PixelPainter(width, height) {
   var swatch = new Array(16);
   var erase = document.createElement('button');
   var clear = document.createElement('button');
-  var selColor = 'white';
+  var selected = 'white';
+  var isPainting = isErasing = false;
+  var lastButton = thisButton = null;
+
 
 //save array of colors
   var defColors = ['white', 'silver', 'gray', 'black', 'red', 'maroon', 'yellow', 'olive', 'lime', 'green', 'aqua', 'teal', 'blue', 'navy', 'fuchsia', 'purple'];
@@ -24,7 +27,7 @@ function PixelPainter(width, height) {
   clear.appendChild(document.createTextNode('Clear'));
 
   erase.addEventListener('click', function() {
-    selColor = 'white';
+    selected = 'white';
   })
   clear.addEventListener('click', function() {
 
@@ -49,7 +52,7 @@ function PixelPainter(width, height) {
     //add event listener
     swatch[i].addEventListener('click', function() {
       //sets current color to background
-      selColor = this.style.background;
+      selected = this.style.background;
     })
   }
 
@@ -58,19 +61,40 @@ function PixelPainter(width, height) {
   for (var i = 0; i < width; i++) {
     buttons[i] = new Array(height);
 
-//make a this.grid of buttons
+
 
 //creates buttons
 
 //add event listener to each button
-// handler function takes selColor from swatch to change button selColor
+// handler function takes selected from swatch to change button selected
     for (var j = 0; j < height; j++) {
       buttons[i][j] = document.createElement('button');
       buttons[i][j].className = 'button';
+      buttons[i][j].name = 'button' + ((i * j) + i);
       buttons[i][j].addEventListener('click', function() {
-//this refers to i, j position, set to selColor which can be changed
-        this.style.background = selColor;
-      })
+//this refers to i, j position, set to selected which can be changed
+
+//isPainting is set to false, clicking changes to true
+        isPainting = !isPainting;
+        if (isPainting) {
+          this.style.background = selected;
+        }
+      });
+      buttons[i][j].dataset.lastColor = 'white';
+      buttons[i][j].addEventListener('mouseover', function() {
+        if (isPainting) {
+          if (this.style.background === selected && (lastButton === this || isErasing)) {
+            lastButton.style.background = this.style.background = 'white';
+            isErasing = true;
+          } else {
+            this.style.background = this.dataset.lastColor = selected;
+            isErasing = false;
+          }
+          lastButton = thisButton;
+          thisButton = this;
+          // lastButton = thisButton;  //must set lastButton first
+        }
+      });
     }
   }
 
@@ -120,33 +144,9 @@ function PixelPainter(width, height) {
 }
 PixelPainter.prototype.setup = function() {
   //add this.grid to content's innerHTML
+  document.getElementById('pixelPainter').appendChild(this.topbar);
   document.getElementById('pixelPainter').appendChild(this.grid);
-  document.getElementById('topbar').appendChild(this.topbar);
 };
 
-var painter = new PixelPainter(20, 20);
+var painter = new PixelPainter(50, 50);
 painter.setup();
-
-
-
-
-
-
-
-//SWATCH
-
-//make this.grid of buttons with different colors
-
-//add event listener to each button to assign selColor
-
-
-
-//ADD BUTTON
-
-
-
-//ERASE BUTTON
-
-
-//Add swatch, add, and erase buttons to this.topbar's innerHTML
-
