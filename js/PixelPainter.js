@@ -6,29 +6,38 @@ function PixelPainter(width, height) {
   this.grid = document.createElement('div');
   this.grid.className = "grid";
   this.topbar = document.createElement('div');
-  var buttons = new Array(width);
+  var buttons = new Array;
   var swatch = new Array(16);
   var erase = document.createElement('button');
   var clear = document.createElement('button');
   var selected = 'white';
   var isPainting = isErasing = false;
   var lastButton = thisButton = null;
-
+  var index = [];
+  var painter = this;
+  var move = document.createElement('button');
+  var encode = document.createElement('button');
+  var decode = document.createElement('button');
+  // colorCode = defColors.indexOf(button.style.background); // 2
 
 //save array of colors
-  var defColors = ['white', 'silver', 'gray', 'black', 'red', 'maroon', 'yellow', 'olive', 'lime', 'green', 'aqua', 'teal', 'blue', 'navy', 'fuchsia', 'purple'];
+  var defColors = ['white', 'silver', 'gray', 'black','red',
+                   'maroon', 'yellow', 'olive', 'lime', 'green',
+                   'aqua', 'teal', 'blue', 'navy', 'fuchsia', 'purple'];
 //MAKE SWATCH BUTTONS
   erase.className = 'swatchButton';
-  // erase.setAttribute('value', 'erase');
   clear.className = 'swatchButton';
-  // clear.setAttribute('value', 'clear');
+  encode.className = 'swatchButton';
+  decode.className = 'swatchButton';
 
   erase.appendChild(document.createTextNode('Erase'));
   clear.appendChild(document.createTextNode('Clear'));
+  encode.appendChild(document.createTextNode('Save Drawring'));
+  decode.appendChild(document.createTextNode('Recall'));
 
   erase.addEventListener('click', function() {
     selected = 'white';
-  })
+  });
   clear.addEventListener('click', function() {
 
     //create for loop to access all buttons
@@ -41,6 +50,8 @@ function PixelPainter(width, height) {
   })
   this.topbar.appendChild(erase);
   this.topbar.appendChild(clear);
+  this.topbar.appendChild(encode);
+  this.topbar.appendChild(decode);
 
   for (var i = 0; i < swatch.length; i++) {
 
@@ -68,18 +79,28 @@ function PixelPainter(width, height) {
 //add event listener to each button
 // handler function takes selected from swatch to change button selected
     for (var j = 0; j < height; j++) {
+      // console.log(buttons[i][j]);
       buttons[i][j] = document.createElement('button');
       buttons[i][j].className = 'button';
-      buttons[i][j].name = 'button' + ((i * j) + i);
+      buttons[i][j].name = 'button';
       buttons[i][j].addEventListener('click', function() {
+
+
 //this refers to i, j position, set to selected which can be changed
 
 //isPainting is set to false, clicking changes to true
         isPainting = !isPainting;
+
         if (isPainting) {
           this.style.background = selected;
+          if (this.style.background !== 'white') {
+
+            index.push(this);
+            // console.log(index);
+          }
         }
       });
+      buttons[i][j].dataset.gridIndex = (i * width) + j;
       buttons[i][j].dataset.lastColor = 'white';
       buttons[i][j].addEventListener('mouseover', function() {
         if (isPainting) {
@@ -89,12 +110,15 @@ function PixelPainter(width, height) {
           } else {
             this.style.background = this.dataset.lastColor = selected;
             isErasing = false;
+            index.push(this);
           }
           lastButton = thisButton;
           thisButton = this;
           // lastButton = thisButton;  //must set lastButton first
         }
       });
+      // colorCode = defColors.indexOf(button.style.background);
+
     }
   }
 
@@ -141,6 +165,32 @@ function PixelPainter(width, height) {
   hr.className = 'spacing';
   this.topbar.appendChild(hr);
 
+encode.addEventListener('click', function() {
+  alert(painter.encode());
+})
+
+this.encode = function() {
+  var str ='';
+  for (var i = 0; i < index.length; i++) {
+    var colorCode = defColors.indexOf(index[i].style.backgroundColor);
+    var codeId = index[i].dataset.gridIndex;
+    str += '#' + codeId + ':' + colorCode;
+  }
+  // console.log("hello", str);
+  return str;
+}
+
+decode.addEventListener('click', function() {
+  alert(painter.decode());
+})
+
+this.decode = function() {
+  var j = index % width;
+  var i = parseInt(index/ width);
+  index = (i * width) + j
+
+}
+
 }
 PixelPainter.prototype.setup = function() {
   //add this.grid to content's innerHTML
@@ -148,5 +198,16 @@ PixelPainter.prototype.setup = function() {
   document.getElementById('pixelPainter').appendChild(this.grid);
 };
 
-var painter = new PixelPainter(50, 50);
+
+
+function popup() {
+  alert("STOP SEARCHING FOR PORN!");
+  alert("FOR GOD SAKES, YOU'RE IN A PUBLIC ENVIRONMENT!");
+  alert("AT LEAST WAIT UNTIL YOU'RE AT HOME!");
+  alert("DON'T EVEN THINK ABOUT SEARCHING FOR YIPPING!")
+  alert("YOUR SEARCH HISTORY IS BEING SAVED!");
+  alert("ALL OF YOUR FACEBOOK FRIENDS ARE BEING NOTIFIED!");
+}
+
+var painter = new PixelPainter(40, 80);
 painter.setup();
